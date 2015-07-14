@@ -9,11 +9,12 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.CheckedTextView;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -64,6 +65,10 @@ public class RainbowDreamer extends DialogFragment {
      * @return Returns a view for the color picker, with a table layout as root
      */
     private View buildView() {
+        ScrollView scrollView = new ScrollView(this.getActivity());
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
         TableLayout layout = createTableLayout();
         layout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -75,7 +80,8 @@ public class RainbowDreamer extends DialogFragment {
                 }
             }
         });
-        return layout;
+        scrollView.addView(layout);
+        return scrollView;
     }
 
     /**

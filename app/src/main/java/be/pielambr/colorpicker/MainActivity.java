@@ -23,6 +23,18 @@ public class MainActivity extends AppCompatActivity {
                         "#00FFFF", "#8A2BE2", "#00FFFF",
                         "#8A2BE2", "#00FFFF", "#8A2BE2",
                         "#00FFFF", "#8A2BE2", "#00FFFF",
+                        "#8A2BE2", "#00FFFF", "#8A2BE2",
+                        "#00FFFF", "#8A2BE2", "#00FFFF",
+                        "#8A2BE2", "#00FFFF", "#8A2BE2",
+                        "#00FFFF", "#8A2BE2", "#00FFFF",
+                        "#8A2BE2", "#00FFFF", "#8A2BE2",
+                        "#00FFFF", "#8A2BE2", "#00FFFF",
+                        "#8A2BE2", "#00FFFF", "#8A2BE2",
+                        "#00FFFF", "#8A2BE2", "#00FFFF",
+                        "#8A2BE2", "#00FFFF", "#8A2BE2",
+                        "#00FFFF", "#8A2BE2", "#00FFFF",
+                        "#8A2BE2", "#00FFFF", "#8A2BE2",
+                        "#00FFFF", "#8A2BE2", "#00FFFF",
                         "#8A2BE2", "#00FFFF", "#8A2BE2"});
                 dreamer.setOnColorSelectedListener(new OnColorSelectedListener() {
                     @Override
