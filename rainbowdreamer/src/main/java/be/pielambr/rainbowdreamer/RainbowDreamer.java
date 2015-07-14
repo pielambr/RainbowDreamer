@@ -8,9 +8,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -36,11 +38,10 @@ public class RainbowDreamer extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new AlertDialog.Builder(this.getActivity())
+        return new AlertDialog.Builder(this.getActivity())
                 .setTitle(getTitle())
                 .setMessage(getMessage())
                 .setView(buildView()).create();
-        return dialog;
 
     }
 
@@ -52,15 +53,12 @@ public class RainbowDreamer extends DialogFragment {
         }
     }
 
+    /**
+     * Builds the view for the color picker
+     * @return Returns a view for the color picker, with a table layout as root
+     */
     private View buildView() {
-        TableLayout layout = new TableLayout(getActivity());
-        if(this.colors.length < 1) {
-            return layout;
-        }
-        layout.setLayoutParams(new TableLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-
+        TableLayout layout = createTableLayout();
         layout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
@@ -69,16 +67,19 @@ public class RainbowDreamer extends DialogFragment {
                     toggleInitialised();
                     addColorRows((TableLayout) v);
                 }
-
             }
         });
         return layout;
     }
 
+    /**
+     * Adds table rows to the table layout, containing the colors
+     * @param layout The table layout to which the rows will be added
+     */
     private void addColorRows(TableLayout layout) {
         layout.removeAllViews();
         View[] colors = getColors();
-        int width = layout.getWidth();
+        int width = layout.getWidth() - 2 * getMargin();
         int colorWidth = getWidth() + 2 * getMargin();
         int nbColumns = (int) Math.floor(width / (double) colorWidth);
         int nbRows = (int) Math.ceil(colors.length / (double) nbColumns);
@@ -96,17 +97,43 @@ public class RainbowDreamer extends DialogFragment {
                 }
             }
         }
-        layout.setMinimumHeight(colorWidth * nbRows);
     }
 
+    /**
+     * Creates a new table row that wraps it's content
+     * @return Returns a table row for the table layout
+     */
     private TableRow createTableRow() {
         TableRow row = new TableRow(getActivity());
         row.setLayoutParams(new TableRow.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT));
         return row;
     }
 
+    /**
+     * Creates a new table layout
+     * @return The newly created table layout
+     */
+    private TableLayout createTableLayout() {
+        TableLayout layout = new TableLayout(getActivity());
+        if(this.colors.length < 1) {
+            return layout;
+        }
+        layout.setStretchAllColumns(true);
+        layout.setLayoutParams(new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.MATCH_PARENT,
+                TableLayout.LayoutParams.WRAP_CONTENT));
+        layout.setPadding(getMargin(),
+                getMargin(), getMargin(),
+                getBottomMargin());
+        return layout;
+    }
+
+    /**
+     * Gets the views for all the different color
+     * @return An array with the views for all the colors
+     */
     private View[] getColors() {
         View[] views = new View[colors.length];
         for(int i = 0; i < colors.length; i++) {
@@ -115,17 +142,31 @@ public class RainbowDreamer extends DialogFragment {
         return views;
     }
 
+    /**
+     * Toggles whether this view is already initialised or not
+     */
     private void toggleInitialised() {
         this.initialised = !initialised;
     }
 
+    /**
+     * Returns the view for a single color
+     * @param color The color string that was passed by the user
+     * @return A view for the passed color
+     */
     private View getColoredCircle(final String color) {
-        int m = getMargin();
+        RelativeLayout layout = new RelativeLayout(this.getActivity());
+        layout.setLayoutParams(new TableRow.LayoutParams(
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT));
         TextView view = new TextView(this.getActivity());
-        TableRow.LayoutParams params = new TableRow.LayoutParams(
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 getWidth(), getWidth());
-        params.setMargins(m, m, m, m);
+        params.setMargins(getMargin(), getMargin(),
+                getMargin(), getMargin());
+        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         view.setLayoutParams(params);
+        // We use this for compatibility with lower Android versions
         view.setBackgroundDrawable(getColoredBackground(color));
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,9 +177,15 @@ public class RainbowDreamer extends DialogFragment {
                 dismiss();
             }
         });
-        return view;
+        layout.addView(view);
+        return layout;
     }
 
+    /**
+     * Returns a drawable with the given color
+     * @param color Background color for the drawable
+     * @return A drawable colored with the given string
+     */
     private Drawable getColoredBackground(String color) {
         int bgColor = Color.parseColor(color);
         Drawable circle = getResources().getDrawable(R.drawable.circle);
@@ -147,38 +194,75 @@ public class RainbowDreamer extends DialogFragment {
         return circle;
     }
 
-    private String getTitle() {
+    /**
+     * Returns the title for the color picker
+     * @return The title for the color picker
+     */
+    public String getTitle() {
         return title == null ? getString(R.string.app_name) : title;
     }
 
+    /**
+     * Returns the message that is underneath the title for the color picker
+     * @return The message underneath the title of the color picker
+     */
     private String getMessage() {
         return message == null ? getString(R.string.pick_color) : message;
     }
 
+    /**
+     * Sets a custom message on the color picker
+     * @param message The message for the color picker to display
+     */
     public void setMessage(String message) {
         this.message = message;
     }
 
+    /**
+     * Sets a custom title on the color picker
+     * @param title The title for the color picker
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * Sets an array of colors that the color picker should show
+     * See documentation for Color.parse(...) for what you can pass
+     * @param colors An error of color strings
+     */
     public void setColors(String[] colors) {
         this.colors = colors;
     }
 
+    /**
+     * Select a color in the color picker
+     * @param color The color that needs to be selected
+     */
     public void setSelectedColor(String color) {
         this.selectedColor = color;
     }
 
+    /**
+     * Set a listener on the color picker that should listen for color selection
+     * @param listener A listener that listens for color selection events
+     */
     public void setOnColorSelectedListener(OnColorSelectedListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Returns the width of a color view
+     * @return The width of a color view, in pixels
+     */
     private int getWidth() {
         return getResources().getDimensionPixelSize(R.dimen.color_width);
     }
 
+    /**
+     * Gets the margin that is between the different color views
+     * @return The margin between the color views in pixels
+     */
     private int getMargin() {
         return getResources().getDimensionPixelSize(R.dimen.color_margin);
     }
@@ -187,5 +271,13 @@ public class RainbowDreamer extends DialogFragment {
     public void onSaveInstanceState(Bundle saveState) {
         super.onSaveInstanceState(saveState);
         saveState.putStringArray(KEY_COLORS, colors);
+    }
+
+    /**
+     * Returns the bottom margin of the dialog fragment
+     * @return The bottom margin of the dialog fragment in pixels
+     */
+    private int getBottomMargin() {
+        return getResources().getDimensionPixelSize(R.dimen.dialog_bottom_margin);
     }
 }

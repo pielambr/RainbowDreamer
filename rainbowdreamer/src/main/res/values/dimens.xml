@@ -2,4 +2,5 @@
 <resources>
     <dimen name="color_width">50dp</dimen>
     <dimen name="color_margin">5dp</dimen>
+    <dimen name="dialog_bottom_margin">20dp</dimen>
 </resources>
