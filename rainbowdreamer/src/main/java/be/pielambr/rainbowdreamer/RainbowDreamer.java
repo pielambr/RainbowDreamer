@@ -8,12 +8,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.CheckedTextView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -24,6 +24,8 @@ import android.widget.TextView;
 public class RainbowDreamer extends DialogFragment {
 
     private static final String KEY_COLORS = "_colors";
+    private static final String KEY_SELECTED = "_selected";
+    private static final String KEY_CHECKMARK = "_checkmark";
 
     private String[] colors;
     private String selectedColor;
@@ -31,9 +33,11 @@ public class RainbowDreamer extends DialogFragment {
     private String title;
     private OnColorSelectedListener listener;
     private boolean initialised;
+    private int checkmarkColor;
 
     public RainbowDreamer() {
         this.colors = new String[0];
+        this.checkmarkColor = -1;
     }
 
     @Override
@@ -50,6 +54,8 @@ public class RainbowDreamer extends DialogFragment {
         super.onCreate(savedInstanceState);
         if(savedInstanceState != null) {
             this.colors = savedInstanceState.getStringArray(KEY_COLORS);
+            this.selectedColor = savedInstanceState.getString(KEY_SELECTED);
+            this.checkmarkColor = savedInstanceState.getInt(KEY_CHECKMARK);
         }
     }
 
@@ -177,6 +183,12 @@ public class RainbowDreamer extends DialogFragment {
                 dismiss();
             }
         });
+        if(color.equals(selectedColor)) {
+            view.setText(Html.fromHtml("&#x2713;"));
+            view.setTextSize(getCheckmarkSize());
+            view.setGravity(Gravity.CENTER);
+            view.setTextColor(getCheckmarkColor());
+        }
         layout.addView(view);
         return layout;
     }
@@ -271,6 +283,8 @@ public class RainbowDreamer extends DialogFragment {
     public void onSaveInstanceState(Bundle saveState) {
         super.onSaveInstanceState(saveState);
         saveState.putStringArray(KEY_COLORS, colors);
+        saveState.putString(KEY_SELECTED, selectedColor);
+        saveState.putInt(KEY_CHECKMARK, checkmarkColor);
     }
 
     /**
@@ -279,5 +293,17 @@ public class RainbowDreamer extends DialogFragment {
      */
     private int getBottomMargin() {
         return getResources().getDimensionPixelSize(R.dimen.dialog_bottom_margin);
+    }
+
+    private int getCheckmarkSize() {
+        return getResources().getDimensionPixelSize(R.dimen.checkmark_size);
+    }
+
+    public void setCheckmarkColor(String color) {
+        this.checkmarkColor = Color.parseColor(color);
+    }
+
+    public int getCheckmarkColor() {
+        return this.checkmarkColor;
     }
 }
