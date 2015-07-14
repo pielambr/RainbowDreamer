@@ -295,14 +295,26 @@ public class RainbowDreamer extends DialogFragment {
         return getResources().getDimensionPixelSize(R.dimen.dialog_bottom_margin);
     }
 
+    /**
+     * Gets size of checkmark
+     * @return The size of the checkmark in pixels
+     */
     private int getCheckmarkSize() {
         return getResources().getDimensionPixelSize(R.dimen.checkmark_size);
     }
 
+    /**
+     * Sets the color of the checkmark
+     * @param color The color string of the checkmark
+     */
     public void setCheckmarkColor(String color) {
         this.checkmarkColor = Color.parseColor(color);
     }
 
+    /**
+     * Returns the checkmark color, defaults to white
+     * @return The checkmark color
+     */
     public int getCheckmarkColor() {
         return this.checkmarkColor;
     }
