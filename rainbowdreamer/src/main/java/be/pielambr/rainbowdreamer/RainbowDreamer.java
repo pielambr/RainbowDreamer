@@ -3,7 +3,6 @@ package be.pielambr.rainbowdreamer;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -32,8 +31,9 @@ public class RainbowDreamer extends DialogFragment {
     private String message;
     private String title;
     private OnColorSelectedListener listener;
-    private boolean initialised;
     private int checkmarkColor;
+
+    private boolean initialised;
 
     public RainbowDreamer() {
         this.colors = new int[0];
@@ -74,7 +74,8 @@ public class RainbowDreamer extends DialogFragment {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if(v.getWidth() != 0) {
+                if(v.getWidth() != 0 && !initialised) {
+                    toggleInitialised();
                     addColorRows((TableLayout) v);
                 }
             }
@@ -155,7 +156,7 @@ public class RainbowDreamer extends DialogFragment {
 
     /**
      * Returns the view for a single color
-     * @param color The color string that was passed by the user
+     * @param color The color resource that was passed by the user
      * @return A view for the passed color
      */
     private View getColoredCircle(final int color) {
@@ -178,6 +179,7 @@ public class RainbowDreamer extends DialogFragment {
                 if(listener != null) {
                     listener.selectColor(getResources().getColor(color));
                 }
+                toggleInitialised();
                 dismiss();
             }
         });
@@ -198,9 +200,15 @@ public class RainbowDreamer extends DialogFragment {
      */
     private Drawable getColoredBackground(int color) {
         Drawable circle = getResources().getDrawable(R.drawable.circle);
-        circle.setColorFilter(
-                new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+        circle.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
         return circle;
+    }
+
+    /**
+     * Toggles wether the dialog layout has been initialised
+     */
+    private void toggleInitialised() {
+        initialised = !initialised;
     }
 
     /**

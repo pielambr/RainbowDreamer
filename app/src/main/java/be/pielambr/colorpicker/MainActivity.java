@@ -19,30 +19,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 RainbowDreamer dreamer = new RainbowDreamer();
-                dreamer.setColors(new String[] {
-                        "#00FFFF", "#8A2BE2", "#00FFFF",
-                        "#8A2BE2", "#00FFFF", "#8A2BE2",
-                        "#00FFFF", "#8A2BE2", "#00FFFF",
-                        "#8A2BE2", "#00FFFF", "#8A2BE2",
-                        "#00FFFF", "#8A2BE2", "#00FFFF",
-                        "#8A2BE2", "#00FFFF", "#8A2BE2",
-                        "#00FFFF", "#8A2BE2", "#00FFFF",
-                        "#8A2BE2", "#00FFFF", "#8A2BE2",
-                        "#00FFFF", "#8A2BE2", "#00FFFF",
-                        "#8A2BE2", "#00FFFF", "#8A2BE2",
-                        "#00FFFF", "#8A2BE2", "#00FFFF",
-                        "#8A2BE2", "#00FFFF", "#8A2BE2",
-                        "#00FFFF", "#8A2BE2", "#00FFFF",
-                        "#8A2BE2", "#00FFFF", "#8A2BE2",
-                        "#00FFFF", "#8A2BE2", "#00FFFF",
-                        "#8A2BE2", "#00FFFF", "#8A2BE2"});
+                dreamer.setColors(new int[] {
+                        R.color.olive, R.color.orange,
+                        R.color.red, R.color.blue,
+                        R.color.green, R.color.orange,
+                        R.color.brown, R.color.magenta,
+                        R.color.gray});
                 dreamer.setOnColorSelectedListener(new OnColorSelectedListener() {
                     @Override
                     public void selectColor(int color) {
                         findViewById(R.id.hello).setBackgroundColor(color);
                     }
                 });
-                dreamer.setSelectedColor("#00FFFF");
+                dreamer.setSelectedColor(R.color.red);
                 dreamer.show(getSupportFragmentManager(), "be.pielambr.rainbowdreamer.BLUB");
             }
         });
