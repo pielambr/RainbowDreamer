@@ -11,7 +11,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -28,8 +27,8 @@ public class RainbowDreamer extends DialogFragment {
     private static final String KEY_SELECTED = "_selected";
     private static final String KEY_CHECKMARK = "_checkmark";
 
-    private String[] colors;
-    private String selectedColor;
+    private int[] colors;
+    private int selectedColor;
     private String message;
     private String title;
     private OnColorSelectedListener listener;
@@ -37,25 +36,26 @@ public class RainbowDreamer extends DialogFragment {
     private int checkmarkColor;
 
     public RainbowDreamer() {
-        this.colors = new String[0];
+        this.colors = new int[0];
         this.checkmarkColor = -1;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(this.getActivity())
+        View view = buildView();
+        return new AlertDialog.Builder(getActivity())
                 .setTitle(getTitle())
                 .setMessage(getMessage())
-                .setView(buildView()).create();
-
+                .setView(view)
+                .create();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(savedInstanceState != null) {
-            this.colors = savedInstanceState.getStringArray(KEY_COLORS);
-            this.selectedColor = savedInstanceState.getString(KEY_SELECTED);
+            this.colors = savedInstanceState.getIntArray(KEY_COLORS);
+            this.selectedColor = savedInstanceState.getInt(KEY_SELECTED);
             this.checkmarkColor = savedInstanceState.getInt(KEY_CHECKMARK);
         }
     }
@@ -65,7 +65,7 @@ public class RainbowDreamer extends DialogFragment {
      * @return Returns a view for the color picker, with a table layout as root
      */
     private View buildView() {
-        ScrollView scrollView = new ScrollView(this.getActivity());
+        ScrollView scrollView = new ScrollView(getActivity());
         scrollView.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -74,8 +74,7 @@ public class RainbowDreamer extends DialogFragment {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if(v.getWidth() != 0 && !initialised) {
-                    toggleInitialised();
+                if(v.getWidth() != 0) {
                     addColorRows((TableLayout) v);
                 }
             }
@@ -155,18 +154,11 @@ public class RainbowDreamer extends DialogFragment {
     }
 
     /**
-     * Toggles whether this view is already initialised or not
-     */
-    private void toggleInitialised() {
-        this.initialised = !initialised;
-    }
-
-    /**
      * Returns the view for a single color
      * @param color The color string that was passed by the user
      * @return A view for the passed color
      */
-    private View getColoredCircle(final String color) {
+    private View getColoredCircle(final int color) {
         RelativeLayout layout = new RelativeLayout(this.getActivity());
         layout.setLayoutParams(new TableRow.LayoutParams(
                 TableRow.LayoutParams.WRAP_CONTENT,
@@ -179,17 +171,17 @@ public class RainbowDreamer extends DialogFragment {
         params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         view.setLayoutParams(params);
         // We use this for compatibility with lower Android versions
-        view.setBackgroundDrawable(getColoredBackground(color));
+        view.setBackgroundDrawable(getColoredBackground(getResources().getColor(color)));
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(listener != null) {
-                    listener.selectColor(Color.parseColor(color));
+                    listener.selectColor(getResources().getColor(color));
                 }
                 dismiss();
             }
         });
-        if(color.equals(selectedColor)) {
+        if(color == selectedColor) {
             view.setText(Html.fromHtml("&#x2713;"));
             view.setTextSize(getCheckmarkSize());
             view.setGravity(Gravity.CENTER);
@@ -204,11 +196,10 @@ public class RainbowDreamer extends DialogFragment {
      * @param color Background color for the drawable
      * @return A drawable colored with the given string
      */
-    private Drawable getColoredBackground(String color) {
-        int bgColor = Color.parseColor(color);
+    private Drawable getColoredBackground(int color) {
         Drawable circle = getResources().getDrawable(R.drawable.circle);
         circle.setColorFilter(
-                new PorterDuffColorFilter(bgColor, PorterDuff.Mode.MULTIPLY));
+                new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
         return circle;
     }
 
@@ -249,7 +240,7 @@ public class RainbowDreamer extends DialogFragment {
      * See documentation for Color.parse(...) for what you can pass
      * @param colors An error of color strings
      */
-    public void setColors(String[] colors) {
+    public void setColors(int[] colors) {
         this.colors = colors;
     }
 
@@ -257,7 +248,7 @@ public class RainbowDreamer extends DialogFragment {
      * Select a color in the color picker
      * @param color The color that needs to be selected
      */
-    public void setSelectedColor(String color) {
+    public void setSelectedColor(int color) {
         this.selectedColor = color;
     }
 
@@ -288,8 +279,8 @@ public class RainbowDreamer extends DialogFragment {
     @Override
     public void onSaveInstanceState(Bundle saveState) {
         super.onSaveInstanceState(saveState);
-        saveState.putStringArray(KEY_COLORS, colors);
-        saveState.putString(KEY_SELECTED, selectedColor);
+        saveState.putIntArray(KEY_COLORS, colors);
+        saveState.putInt(KEY_SELECTED, selectedColor);
         saveState.putInt(KEY_CHECKMARK, checkmarkColor);
     }
 
